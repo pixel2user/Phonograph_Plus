@@ -34,6 +34,7 @@ fun migrate(context: Context, from: Int, to: Int) {
             migrate(QueuePreferenceMigration())
             migrate(PagesMigration())
             migrate(LockScreenCoverMigration())
+            migrate(QueueStoreMigration())
         }
 
         Log.i(TAG, "End Migration")
@@ -135,6 +136,12 @@ private class LockScreenCoverMigration : Migration(introduced = 522, deprecated 
     override fun doMigrate(context: Context) {
         removePreference(context, keyName = DeprecatedPreference.LockScreenCover.ALBUM_ART_ON_LOCKSCREEN)
         removePreference(context, keyName = DeprecatedPreference.LockScreenCover.BLURRED_ALBUM_ART)
+    }
+}
+
+private class QueueStoreMigration : Migration(introduced = 601) {
+    override fun doMigrate(context: Context) {
+        migrateMusicPlaybackQueueStore(context.applicationContext)
     }
 }
 
