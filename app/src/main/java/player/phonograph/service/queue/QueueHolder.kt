@@ -5,7 +5,6 @@
 package player.phonograph.service.queue
 
 import player.phonograph.model.Song
-import player.phonograph.repo.database.MusicPlaybackQueueStore
 import player.phonograph.service.util.QueuePreferenceManager
 import player.phonograph.util.text.currentTimestamp
 import android.content.Context
@@ -172,8 +171,8 @@ class QueueHolder private constructor(
     }
 
     fun saveQueue(context: Context) = synchronized(persistenceLock) {
-        MusicPlaybackQueueStore.getInstance(context)
-            .saveQueues(playingQueue, originalPlayingQueue)
+        QueueStore.getInstance(context)
+            .save(playingQueue, originalPlayingQueue)
     }
 
     fun saveCfg(context: Context) = synchronized(persistenceLock) {
@@ -201,9 +200,9 @@ class QueueHolder private constructor(
             synchronized(persistenceLock) {
 
                 val restoredQueue: List<Song> =
-                    MusicPlaybackQueueStore.getInstance(context).savedPlayingQueue
+                    QueueStore.getInstance(context).savedPlayingQueue(context)
                 val restoredOriginalQueue: List<Song> =
-                    MusicPlaybackQueueStore.getInstance(context).savedOriginalPlayingQueue
+                    QueueStore.getInstance(context).savedOriginalPlayingQueue(context)
 
                 val preferenceManager = QueuePreferenceManager(context)
 

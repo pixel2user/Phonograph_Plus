@@ -19,6 +19,7 @@ import android.provider.MediaStore.Audio.AudioColumns
  *
  * This keeps track of the music playback and history state of the playback service
  */
+@Deprecated("use QueueStore")
 class MusicPlaybackQueueStore(context: Context?) : SQLiteOpenHelper(
     context, DatabaseConstants.MUSIC_PLAYBACK_STATE_DB, null, VERSION
 ) {

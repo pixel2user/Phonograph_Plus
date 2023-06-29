@@ -9,10 +9,10 @@ import player.phonograph.mechanism.event.MediaStoreTracker
 import player.phonograph.model.Song
 import player.phonograph.model.playlist.FilePlaylist
 import player.phonograph.repo.database.FavoritesStore
-import player.phonograph.repo.database.MusicPlaybackQueueStore
 import player.phonograph.repo.database.PathFilterStore
 import player.phonograph.repo.mediastore.loaders.PlaylistLoader
 import player.phonograph.repo.mediastore.loaders.SongLoader
+import player.phonograph.service.queue.QueueStore
 import player.phonograph.util.reportError
 import player.phonograph.util.warning
 import androidx.annotation.Keep
@@ -100,9 +100,9 @@ object DatabaseDataManger {
     }
 
     private fun exportPlayingQueues(context: Context): JsonObject? {
-        val db = MusicPlaybackQueueStore.getInstance(context)
-        val oq = db.savedOriginalPlayingQueue.map(DatabaseDataManger::persistentSong)
-        val pq = db.savedPlayingQueue.map(DatabaseDataManger::persistentSong)
+        val db = QueueStore.getInstance(context)
+        val oq = db.savedOriginalPlayingQueue(context).map(DatabaseDataManger::persistentSong)
+        val pq = db.savedPlayingQueue(context).map(DatabaseDataManger::persistentSong)
         return if (oq.isNotEmpty() || pq.isNotEmpty()) {
             JsonObject(
                 mapOf(
@@ -128,7 +128,7 @@ object DatabaseDataManger {
         val pq = json[PLAYING_QUEUE] as? JsonArray
 
 
-        val db = MusicPlaybackQueueStore.getInstance(context)
+        val db = QueueStore.getInstance(context)
 
         val originalQueue = recoverSongs(context, oq)
         val currentQueueQueue = recoverSongs(context, pq)
@@ -137,7 +137,7 @@ object DatabaseDataManger {
 
             // todo: report imported queues
 
-            db.saveQueues(
+            db.save(
                 currentQueueQueue ?: originalQueue ?: emptyList(),
                 originalQueue ?: currentQueueQueue ?: emptyList(),
             )
