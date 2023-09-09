@@ -67,6 +67,22 @@ class TagInfoTableViewModel(state: TagInfoTableState) : ViewModel() {
         return _viewState.value.copy(tagFields = tmp)
     }
     //endregion
+
+
+    private val _prefillsMap: MutableStateFlow<MutableMap<FieldKey, List<String>>> = MutableStateFlow(mutableMapOf())
+    val prefillsMap get() = _prefillsMap.asStateFlow()
+
+    fun insertPrefill(key: FieldKey, value: String) {
+        val newList = (_prefillsMap.value[key] ?: listOf()) + value
+        val newMap = _prefillsMap.value.also { it[key] = newList }
+        _prefillsMap.tryEmit(newMap)
+    }
+
+    fun insertPrefill(key: FieldKey, values: List<String>) {
+        val newList = (_prefillsMap.value[key] ?: listOf()) + values
+        val newMap = _prefillsMap.value.also { it[key] = newList }
+        _prefillsMap.tryEmit(newMap)
+    }
 }
 
 data class TagInfoTableState(

@@ -73,8 +73,10 @@ private fun CommonTagTable(model: TagInfoTableViewModel) {
     val state: TagInfoTableState by model.viewState.collectAsState()
 
     val tagFields = state.tagFields
+    val prefillsMap by model.prefillsMap.collectAsState()
     for ((key, field) in tagFields) {
-        CommonTag(key, field, state.editable, model::process)
+        val alternatives = prefillsMap[key] ?: emptyList()
+        CommonTag(key, field, state.editable, alternatives, model::process)
     }
     if (state.editable) AddMoreButton(model)
 }
@@ -153,6 +155,7 @@ private fun CommonTag(
     key: FieldKey,
     field: TagData,
     editable: Boolean,
+    alternatives: List<String>,
     onEdit: (TagInfoTableEvent) -> Unit,
 ) {
     val context = LocalContext.current
@@ -163,7 +166,7 @@ private fun CommonTag(
 
     Box(modifier = Modifier.fillMaxWidth()) {
         if (editable) {
-            EditableItem(key, tagName, tagValue, onEdit)
+            EditableItem(key, tagName, tagValue, alternatives, onEdit)
         } else {
             if (tagValue.isNotEmpty()) Item(tagName, tagValue)
         }
@@ -185,6 +188,7 @@ private fun EditableItem(
     key: FieldKey,
     tagName: String,
     original: String,
+    alternatives: List<String>,
     onEdit: (TagInfoTableEvent) -> Unit,
 ) {
     Column(
@@ -226,7 +230,6 @@ private fun EditableItem(
         }
 
         var showDropdownMenu by remember { mutableStateOf(false) }
-        val prefillAlternatives = setOf("-") //todo
 
         TextField(
             value = currentValue,
@@ -291,7 +294,7 @@ private fun EditableItem(
                 showDropdownMenu = false
             }
         ) {
-            for (alternative in prefillAlternatives) {
+            for (alternative in alternatives) {
                 DropdownMenuItem(
                     onClick = {
                         showDropdownMenu = false
