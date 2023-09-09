@@ -9,18 +9,16 @@ import util.phonograph.tagsources.lastfm.LastFmTrack
 import util.phonograph.tagsources.musicbrainz.MusicBrainzRecording
 
 
-internal fun process(viewModel: TagEditorScreenViewModel, item: Any) {
-    val tableViewModel = viewModel.audioDetail.value?.tagInfoTableViewModel
-    if (tableViewModel != null) {
-        when (item) {
-            is LastFmTrack          -> insert(tableViewModel, item)
-            is MusicBrainzRecording -> insert(tableViewModel, item)
-        }
+internal fun process(viewModel: TagEditorScreenViewModel.WebSearchResult, item: Any) {
+    when (item) {
+        is LastFmTrack          -> insert(viewModel, item)
+        is MusicBrainzRecording -> insert(viewModel, item)
     }
+
 }
 
-private fun insert(tableViewModel: TagInfoTableViewModel, track: LastFmTrack) =
-    with(ProcessScope(tableViewModel)) {
+private fun insert(viewModel: TagEditorScreenViewModel.WebSearchResult, track: LastFmTrack) =
+    with(ProcessScope(viewModel)) {
 
         link(FieldKey.MUSICBRAINZ_TRACK_ID, track.mbid)
         link(FieldKey.TITLE, track.name)
@@ -33,7 +31,7 @@ private fun insert(tableViewModel: TagInfoTableViewModel, track: LastFmTrack) =
 
     }
 
-private fun insert(tableViewModel: TagInfoTableViewModel, recording: MusicBrainzRecording) =
+private fun insert(tableViewModel: TagEditorScreenViewModel.WebSearchResult, recording: MusicBrainzRecording) =
     with(ProcessScope(tableViewModel)) {
         link(FieldKey.MUSICBRAINZ_TRACK_ID, recording.id)
         link(FieldKey.TITLE, recording.title)
@@ -51,12 +49,12 @@ private fun insert(tableViewModel: TagInfoTableViewModel, recording: MusicBrainz
         link(FieldKey.YEAR, recording.firstReleaseDate)
     }
 
-private class ProcessScope(val tableViewModel: TagInfoTableViewModel) {
+private class ProcessScope(val viewModel: TagEditorScreenViewModel.WebSearchResult) {
     fun link(fieldKey: FieldKey, value: String?) {
-        if (value != null) tableViewModel.insertPrefill(fieldKey, value)
+        if (value != null) viewModel.insertPrefill(fieldKey, value)
     }
 
     fun link(fieldKey: FieldKey, values: List<String>?) {
-        if (values != null) tableViewModel.insertPrefill(fieldKey, values)
+        if (values != null) viewModel.insertPrefill(fieldKey, values)
     }
 }

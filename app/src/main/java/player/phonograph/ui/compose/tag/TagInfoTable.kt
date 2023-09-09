@@ -55,7 +55,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TagInfoTable(model: TagInfoTableViewModel, titleColor: Color) {
+fun TagInfoTable(
+    model: TagInfoTableViewModel,
+    titleColor: Color,
+) {
     val state: TagInfoTableState by model.viewState.collectAsState()
     Column(modifier = Modifier.fillMaxWidth()) {
         Title(stringResource(R.string.music_tags), color = titleColor)
@@ -73,7 +76,11 @@ private fun CommonTagTable(model: TagInfoTableViewModel) {
     val state: TagInfoTableState by model.viewState.collectAsState()
 
     val tagFields = state.tagFields
-    val prefillsMap by model.prefillsMap.collectAsState()
+
+    val webSearchResult = (LocalContext.current as? TagEditorActivity)?.webSearchResult
+
+    val prefillsMap
+            by (webSearchResult ?: TagEditorScreenViewModel.WebSearchResult()).prefillsMap.collectAsState()
     for ((key, field) in tagFields) {
         val alternatives = prefillsMap[key] ?: emptyList()
         CommonTag(key, field, state.editable, alternatives, model::process)

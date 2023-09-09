@@ -10,6 +10,7 @@ import lib.phonograph.misc.ICreateFileStorageAccess
 import lib.phonograph.misc.IOpenFileStorageAccess
 import lib.phonograph.misc.OpenFileStorageAccessTool
 import mt.pref.ThemeColor.primaryColor
+import org.jaudiotagger.tag.FieldKey
 import player.phonograph.R
 import player.phonograph.mechanism.tag.edit.selectNewArtwork
 import player.phonograph.mechanism.tag.loadSongInfo
@@ -182,7 +183,7 @@ class TagEditorActivity :
                 webSearchTool.launch(intent) {
                     if (it != null) {
                         lifecycleScope.launch(Dispatchers.IO) {
-                            process(model, it)
+                            process(model.webSearchResult, it)
                         }
                     }
                 }
@@ -197,6 +198,7 @@ class TagEditorActivity :
             }
         }
     }
+    val webSearchResult get() = model.webSearchResult
 }
 
 class TagEditorScreenViewModel(song: Song, defaultColor: Color) :
@@ -213,6 +215,27 @@ class TagEditorScreenViewModel(song: Song, defaultColor: Color) :
             loadArtwork(context, song)
         }
     }
+
+    val webSearchResult = WebSearchResult()
+
+    class WebSearchResult {
+        private val _prefillsMap: MutableStateFlow<MutableMap<FieldKey, List<String>>> =
+            MutableStateFlow(mutableMapOf())
+        val prefillsMap get() = _prefillsMap.asStateFlow()
+
+        fun insertPrefill(key: FieldKey, value: String) {
+            val newList = (_prefillsMap.value[key] ?: listOf()) + value
+            val newMap = _prefillsMap.value.also { it[key] = newList }
+            _prefillsMap.tryEmit(newMap)
+        }
+
+        fun insertPrefill(key: FieldKey, values: List<String>) {
+            val newList = (_prefillsMap.value[key] ?: listOf()) + values
+            val newMap = _prefillsMap.value.also { it[key] = newList }
+            _prefillsMap.tryEmit(newMap)
+        }
+    }
+
 
 
     val saveConfirmationDialogState = MaterialDialogState(false)
