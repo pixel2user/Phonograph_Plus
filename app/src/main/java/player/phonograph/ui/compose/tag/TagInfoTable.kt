@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -30,6 +31,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
@@ -223,6 +225,9 @@ private fun EditableItem(
             indicatorColor = Color(0xFF00C72C)
         }
 
+        var showDropdownMenu by remember { mutableStateOf(false) }
+        val prefillAlternatives = setOf("-") //todo
+
         TextField(
             value = currentValue,
             // placeholder = { Text(text = currentValue) },
@@ -259,6 +264,13 @@ private fun EditableItem(
                         )
                     }
                     Icon(
+                        Icons.Default.ArrowDropDown,
+                        contentDescription = stringResource(id = R.string.more_actions),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { showDropdownMenu = !showDropdownMenu }
+                    )
+                    Icon(
                         Icons.Default.Close,
                         contentDescription = stringResource(id = R.string.delete_action),
                         modifier = Modifier
@@ -270,6 +282,26 @@ private fun EditableItem(
                 }
             }
         )
+
+        // prefill
+        DropdownMenu(
+            expanded = showDropdownMenu,
+            modifier = Modifier.fillMaxWidth(0.7f),
+            onDismissRequest = {
+                showDropdownMenu = false
+            }
+        ) {
+            for (alternative in prefillAlternatives) {
+                DropdownMenuItem(
+                    onClick = {
+                        showDropdownMenu = false
+                        updateValue(alternative)
+                    }
+                ) {
+                    Text(text = alternative)
+                }
+            }
+        }
     }
 
 }
