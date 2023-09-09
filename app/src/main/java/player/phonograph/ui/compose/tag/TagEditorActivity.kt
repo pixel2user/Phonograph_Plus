@@ -56,7 +56,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -179,7 +178,7 @@ class TagEditorActivity :
                     Source.MusicBrainz -> WebSearchLauncher.searchMusicBrainzSong(context, song)
                 }
                 webSearchTool.launch(intent) {
-                    Log.v("TagEditor", it.toString()) //todo
+                    if (it != null) process(model, it)
                 }
             }
             DropdownMenuItem(onClick = { search(Source.MusicBrainz) }
