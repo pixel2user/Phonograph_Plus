@@ -50,12 +50,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -178,7 +180,11 @@ class TagEditorActivity :
                     Source.MusicBrainz -> WebSearchLauncher.searchMusicBrainzSong(context, song)
                 }
                 webSearchTool.launch(intent) {
-                    if (it != null) process(model, it)
+                    if (it != null) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            process(model, it)
+                        }
+                    }
                 }
             }
             DropdownMenuItem(onClick = { search(Source.MusicBrainz) }
