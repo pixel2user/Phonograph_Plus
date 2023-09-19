@@ -25,6 +25,7 @@ import player.phonograph.ui.dialogs.LyricsDialog
 import player.phonograph.ui.dialogs.NowPlayingScreenPreferenceDialog
 import player.phonograph.ui.dialogs.QueueSnapshotsDialog
 import player.phonograph.ui.dialogs.SleepTimerDialog
+import player.phonograph.ui.dialogs.SleepTimerDialog2
 import player.phonograph.ui.dialogs.SpeedControlDialog
 import player.phonograph.ui.fragments.AbsMusicServiceFragment
 import player.phonograph.ui.fragments.player.PlayerAlbumCoverFragment.Companion.VISIBILITY_ANIM_DURATION
@@ -213,6 +214,15 @@ abstract class AbsPlayerFragment :
                 showAsActionFlag = MenuItem.SHOW_AS_ACTION_NEVER
                 onClick {
                     SleepTimerDialog()
+                        .show(childFragmentManager, "SET_SLEEP_TIMER")
+                    true
+                }
+            }
+            menuItem {
+                title = getString(R.string.action_sleep_timer)
+                showAsActionFlag = MenuItem.SHOW_AS_ACTION_NEVER
+                onClick {
+                    SleepTimerDialog2()
                         .show(childFragmentManager, "SET_SLEEP_TIMER")
                     true
                 }
