@@ -17,6 +17,7 @@ import player.phonograph.mechanism.setting.PageConfig
 import player.phonograph.mechanism.setting.StyleConfig
 import player.phonograph.model.pages.Pages
 import player.phonograph.repo.loader.Songs
+import player.phonograph.repo.room.MusicDatabase
 import player.phonograph.service.queue.ShuffleMode
 import player.phonograph.settings.Keys
 import player.phonograph.settings.Setting
@@ -180,6 +181,22 @@ fun setupDrawerMenu(
             titleRes(R.string.more_actions)
             onClick {
                 val items = listOf(
+                    "Delete Databases" to {
+                        activity.lifecycleScope.launch(Dispatchers.IO) {
+                            MusicDatabase.songDatabase.close()
+                            MusicDatabase.songDatabase.clearAllTables()
+                        }
+                    },
+                    "Refresh Databases" to {
+                        activity.lifecycleScope.launch(Dispatchers.IO) {
+                            MusicDatabase.checkUpdate(activity)
+                        }
+                    },
+                    "Close Databases" to {
+                        activity.lifecycleScope.launch(Dispatchers.IO) {
+                            MusicDatabase.songDatabase.close()
+                        }
+                    },
                     activity.getString(R.string.action_grant_storage_permission) to {
                         navigateToStorageSetting(activity)
                     },
